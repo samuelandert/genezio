@@ -6,8 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthService } from "@genezio/auth";
 import { BackendService } from "@genezio-sdk/genezio-login-metamask";
 
-// TODO: Replace with your own API key and region
-AuthService.getInstance().setTokenAndRegion("0-4j67s2uh7d72utpwq3xypqvhha0ugpya", "eu-central-1");
+AuthService.getInstance().setTokenAndRegion("0-pxj2ks7bibsqoqwido6ujwkfgm0xzdmy","eu-central-1");
 
 function App() {
     // This is the user's address and balance
