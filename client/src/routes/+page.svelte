@@ -43,6 +43,7 @@
 			});
 			await AuthService.getInstance().web3Login(address, signature);
 			await getBalance(address);
+			await getSecuredInfo();
 		} else {
 			alert('Please install MetaMask to use this feature.');
 		}
@@ -60,6 +61,10 @@
 		} catch {
 			logout();
 		}
+	}
+
+	$: if ($data.address) {
+		getSecuredInfo();
 	}
 </script>
 
@@ -91,12 +96,6 @@
 		<div>
 			<h2 class="mt-4 text-lg font-bold">Secured Info</h2>
 			<p class="text-gray-700">{$securedInfo}</p>
-			<button
-				class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700"
-				on:click={getSecuredInfo}
-			>
-				Fetch Secured Info
-			</button>
 		</div>
 	{/if}
 </main>
