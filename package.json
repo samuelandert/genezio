@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@genezio/auth": "^2.0.19"
+  }
+}
