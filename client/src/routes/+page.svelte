@@ -87,14 +87,16 @@
 			Logout
 		</button>
 	</div>
-	<div>
-		<h2 class="mt-4 text-lg font-bold">Secured Info</h2>
-		<p class="text-gray-700">{$securedInfo}</p>
-		<button
-			class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700"
-			on:click={getSecuredInfo}
-		>
-			Fetch Secured Info
-		</button>
-	</div>
+	{#if $data.address}
+		<div>
+			<h2 class="mt-4 text-lg font-bold">Secured Info</h2>
+			<p class="text-gray-700">{$securedInfo}</p>
+			<button
+				class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700"
+				on:click={getSecuredInfo}
+			>
+				Fetch Secured Info
+			</button>
+		</div>
+	{/if}
 </main>
