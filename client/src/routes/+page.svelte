@@ -3,15 +3,18 @@
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 	import { AuthService } from '@genezio/auth';
-	import { BackendService } from '@genezio-sdk/genezio-login-metamask';
+	import { BackendService, UserService } from '@genezio-sdk/genezio-login-metamask';
 	import { ethers } from 'ethers';
 
 	AuthService.getInstance().setTokenAndRegion('0-xqr4pc3avfpzqjkmesysoegaea0jzwhz', 'eu-central-1');
 
 	let data = writable({ address: null, balance: null });
 	let securedInfo = writable('');
+	let users = writable([]);
 
 	onMount(async () => {
+		console.log('userservice:', UserService);
+
 		if (browser) {
 			const user = await AuthService.getInstance().userInfo();
 			if (user.address) {
@@ -22,6 +25,18 @@
 			}
 		}
 	});
+
+	async function fetchUsers() {
+		try {
+			const response = await UserService.getUsers();
+			console.log('users:', response);
+			users.set(response.users);
+		} catch (error) {
+			console.error('Error fetching users:', error);
+		}
+	}
+
+	$: $data.address, fetchUsers();
 
 	async function getBalance(address: string) {
 		const balance = await window.ethereum.request({
@@ -97,5 +112,14 @@
 			<h2 class="mt-4 text-lg font-bold">Secured Info</h2>
 			<p class="text-gray-700">{$securedInfo}</p>
 		</div>
+		{#if $users.length > 0}
+			<ul>
+				{#each $users as user}
+					<li>Address: {user.address}</li>
+				{/each}
+			</ul>
+		{:else}
+			<p>No users available.</p>
+		{/if}
 	{/if}
 </main>
