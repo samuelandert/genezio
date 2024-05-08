@@ -13,8 +13,6 @@
 	let users = writable([]);
 
 	onMount(async () => {
-		console.log('userservice:', UserService);
-
 		if (browser) {
 			const user = await AuthService.getInstance().userInfo();
 			if (user.address) {
@@ -37,6 +35,23 @@
 	}
 
 	$: $data.address, fetchUsers();
+
+	async function updateUserName() {
+		const newName = prompt('Enter your new name:');
+		if (newName) {
+			try {
+				const response = await UserService.updateUser($data.address, newName);
+				if (response.success) {
+					alert('Name updated successfully!');
+				} else {
+					alert('Failed to update name: ' + response.msg);
+				}
+			} catch (error) {
+				console.error('Error updating name:', error);
+				alert('Error updating name.');
+			}
+		}
+	}
 
 	async function getBalance(address: string) {
 		const balance = await window.ethereum.request({
@@ -112,10 +127,18 @@
 			<h2 class="mt-4 text-lg font-bold">Secured Info</h2>
 			<p class="text-gray-700">{$securedInfo}</p>
 		</div>
+		{#if $data.address}
+			<button
+				class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700"
+				on:click={updateUserName}
+			>
+				Update My Name
+			</button>
+		{/if}
 		{#if $users.length > 0}
 			<ul>
 				{#each $users as user}
-					<li>Address: {user.address}</li>
+					<li>Name: {user.name} Address: {user.address}</li>
 				{/each}
 			</ul>
 		{:else}

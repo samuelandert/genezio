@@ -90,6 +90,21 @@ export class UserService {
         }
     }
 
+    async updateUser(address: string, newName: string): Promise<UserResponse> {
+        const user = await UserModel.findOne({ where: { address: address } });
+        if (!user) {
+            return { success: false, msg: "User does not exist" };
+        }
+
+        try {
+            user.name = newName;
+            await user.save();
+            return { success: true, msg: "User updated successfully", user: user };
+        } catch (err) {
+            return { success: false, msg: "Error updating user", err: err.message };
+        }
+    }
+
     async getUsers(): Promise<AllUsersResponse> {
         const users = await UserModel.findAll();
         if (users) {
