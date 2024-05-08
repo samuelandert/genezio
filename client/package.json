@@ -32,6 +32,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@genezio-sdk/genezio-login-metamask": "^1.0.0-prod",
     "@genezio/auth": "^2.0.19",
     "ethers": "^6.12.1"
   }
