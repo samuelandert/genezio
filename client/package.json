@@ -39,7 +39,9 @@
   },
   "type": "module",
   "dependencies": {
+    "@genezio-sdk/genezio-login-metamask": "^1.0.0-prod",
     "@genezio/auth": "^2.0.19",
+    "@sveltejs/adapter-cloudflare": "^4.4.0",
     "ethers": "^6.12.1"
   }
 }

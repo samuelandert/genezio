@@ -6,7 +6,7 @@
 	import { BackendService } from '@genezio-sdk/genezio-login-metamask';
 	import { ethers } from 'ethers';
 
-	AuthService.getInstance().setTokenAndRegion('0-pxj2ks7bibsqoqwido6ujwkfgm0xzdmy', 'eu-central-1');
+	AuthService.getInstance().setTokenAndRegion('0-xqr4pc3avfpzqjkmesysoegaea0jzwhz', 'eu-central-1');
 
 	let data = writable({ address: null, balance: null });
 	let securedInfo = writable('');
