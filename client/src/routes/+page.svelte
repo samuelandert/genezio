@@ -3,8 +3,8 @@
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 	import { AuthService } from '@genezio/auth';
-	import { BackendService, UserService } from '@genezio-sdk/genezio-login-metamask';
 	import { ethers } from 'ethers';
+	import { BackendService, UserService } from '@genezio-sdk/genezio-login-metamask';
 
 	AuthService.getInstance().setTokenAndRegion('0-xqr4pc3avfpzqjkmesysoegaea0jzwhz', 'eu-central-1');
 
@@ -37,19 +37,10 @@
 	$: $data.address, fetchUsers();
 
 	async function updateUserName() {
-		const newName = prompt('Enter your new name:');
+		const newName = prompt('Please enter your new name:');
 		if (newName) {
-			try {
-				const response = await UserService.updateUser($data.address, newName);
-				if (response.success) {
-					alert('Name updated successfully!');
-				} else {
-					alert('Failed to update name: ' + response.msg);
-				}
-			} catch (error) {
-				console.error('Error updating name:', error);
-				alert('Error updating name.');
-			}
+			const response = await UserService.updateUser(newName);
+			console.log('response: ', response);
 		}
 	}
 

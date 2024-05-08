@@ -1,6 +1,7 @@
 // server/user.ts
 import { UserModel } from "./models/userModel"
-import { GenezioDeploy } from "@genezio/types";
+import { GenezioAuth, GenezioDeploy, GnzContext } from "@genezio/types";
+
 import { DataTypes, Sequelize } from "sequelize";
 import pg from "pg";
 
@@ -90,19 +91,39 @@ export class UserService {
         }
     }
 
-    async updateUser(address: string, newName: string): Promise<UserResponse> {
-        const user = await UserModel.findOne({ where: { address: address } });
+    @GenezioAuth()
+    async updateUser(context: GnzContext, newName: string): Promise<UserResponse> {
+        const userAddress = context.user?.address;
+        if (!userAddress) {
+            return {
+                success: false,
+                err: "User not authenticated or token has expired",
+            };
+        }
+
+        console.log(`Update request received for user at address ${userAddress} to update name to ${newName}`);
+
+        const user = await UserModel.findOne({
+            where: { address: userAddress },
+        });
+
         if (!user) {
-            return { success: false, msg: "User does not exist" };
+            return {
+                success: false,
+                err: "User does not exist or the user doesn't have access to it",
+            };
         }
 
         try {
-            user.name = newName;
+            user.set({
+                name: newName,
+            });
             await user.save();
-            return { success: true, msg: "User updated successfully", user: user };
-        } catch (err) {
-            return { success: false, msg: "Error updating user", err: err.message };
+        } catch (error: any) {
+            return { success: false, err: error.toString() };
         }
+
+        return { success: true, user: user };
     }
 
     async getUsers(): Promise<AllUsersResponse> {
