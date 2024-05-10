@@ -65,31 +65,35 @@
 	}
 </script>
 
-<main class="p-4">
+<main class="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
 	{#if $currentUser.address}
-		<div>
-			<button
-				class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700"
-				on:click={logout}
-			>
-				Logout
-			</button>
-			<button
-				class="px-4 py-2 ml-2 font-bold text-white bg-green-500 rounded hover:bg-green-700"
-				on:click={updateUserName}
-			>
-				Update My Name
-			</button>
-			<div>
-				<h2 class="text-lg font-bold">Current User</h2>
-				<p>Name: {$currentUser.name}, Address: {$currentUser.address}</p>
+		<div class="flex flex-col w-full h-full max-w-6xl md:flex-row">
+			<div class="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md md:w-1/4 md:h-full">
+				<div class="flex flex-col items-center justify-between mb-6">
+					<button
+						class="px-4 py-2 mb-4 font-bold text-white bg-red-500 rounded hover:bg-red-700"
+						on:click={logout}
+					>
+						Logout
+					</button>
+					<button
+						class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700"
+						on:click={updateUserName}
+					>
+						Update My Name
+					</button>
+				</div>
+				<div class="mb-6">
+					<h2 class="text-lg font-bold">Welcome {$currentUser.name}</h2>
+					<p>{$currentUser.address.substring(0, 16)}...</p>
+				</div>
 			</div>
-			<div>
-				<h2 class="mt-4 text-lg font-bold">All Users</h2>
+			<div class="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md md:w-3/4 md:h-full">
+				<h2 class="mb-6 text-lg font-bold">All Users</h2>
 				{#if $users.length > 0}
 					<ul>
 						{#each $users as user}
-							<li>Name: {user.name}, Address: {user.address}</li>
+							<li>{user.name}: {user.address.substring(0, 16)}...</li>
 						{/each}
 					</ul>
 				{:else}
@@ -98,9 +102,9 @@
 			</div>
 		</div>
 	{:else}
-		<div>
+		<div class="w-full max-w-xs">
 			<button
-				class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+				class="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
 				on:click={loginWithMetamask}
 			>
 				Login with MetaMask
