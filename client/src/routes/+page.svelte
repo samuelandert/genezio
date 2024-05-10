@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 	import { AuthService } from '@genezio/auth';
 	import { ethers } from 'ethers';
 	import { BackendService, UserService } from '@genezio-sdk/genezio-login-metamask';
+	import startPolling from '../lib/polling';
 
 	AuthService.getInstance().setTokenAndRegion('0-xqr4pc3avfpzqjkmesysoegaea0jzwhz', 'eu-central-1');
 
@@ -12,7 +13,22 @@
 	let securedInfo = writable('');
 	let users = writable([]);
 
+	let stopUsersPolling;
+	let stopSecuredInfoPolling;
+
 	onMount(async () => {
+		stopUsersPolling = startPolling(async () => {
+			const response = await UserService.getUsers();
+			if (response.success) {
+				users.set(response.users);
+			}
+		}, 5000); // Poll every 5 seconds
+
+		// Start polling for secured info
+		stopSecuredInfoPolling = startPolling(async () => {
+			const greetingMessage = await BackendService.hello('Friend');
+			securedInfo.set(greetingMessage);
+		}, 10000); // Poll every 10 seconds
 		if (browser) {
 			const user = await AuthService.getInstance().userInfo();
 			if (user.address) {
@@ -21,6 +37,15 @@
 				console.error('Not authenticated. Redirecting to login screen...');
 				data.set({ address: null, balance: null });
 			}
+		}
+	});
+
+	onDestroy(() => {
+		if (typeof stopUsersPolling === 'function') {
+			stopUsersPolling();
+		}
+		if (typeof stopSecuredInfoPolling === 'function') {
+			stopSecuredInfoPolling();
 		}
 	});
 
