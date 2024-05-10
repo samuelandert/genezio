@@ -5,7 +5,7 @@
 	import { AuthService } from '@genezio/auth';
 	import { ethers } from 'ethers';
 	import { BackendService, UserService } from '@genezio-sdk/genezio-login-metamask';
-	import startPolling from '../lib/polling';
+	import { pollingManager } from '../lib/polling';
 
 	AuthService.getInstance().setTokenAndRegion('0-xqr4pc3avfpzqjkmesysoegaea0jzwhz', 'eu-central-1');
 
@@ -13,22 +13,20 @@
 	let securedInfo = writable('');
 	let users = writable([]);
 
-	let stopUsersPolling;
-	let stopSecuredInfoPolling;
-
 	onMount(async () => {
-		stopUsersPolling = startPolling(async () => {
+		pollingManager.startPolling('users', async () => {
 			const response = await UserService.getUsers();
 			if (response.success) {
 				users.set(response.users);
 			}
-		}, 5000); // Poll every 5 seconds
+		});
 
-		// Start polling for secured info
-		stopSecuredInfoPolling = startPolling(async () => {
+		// Start polling for secured info with default interval
+		pollingManager.startPolling('securedInfo', async () => {
 			const greetingMessage = await BackendService.hello('Friend');
 			securedInfo.set(greetingMessage);
-		}, 10000); // Poll every 10 seconds
+		});
+
 		if (browser) {
 			const user = await AuthService.getInstance().userInfo();
 			if (user.address) {
@@ -41,12 +39,7 @@
 	});
 
 	onDestroy(() => {
-		if (typeof stopUsersPolling === 'function') {
-			stopUsersPolling();
-		}
-		if (typeof stopSecuredInfoPolling === 'function') {
-			stopSecuredInfoPolling();
-		}
+		pollingManager.stopAllPolling();
 	});
 
 	async function fetchUsers() {
@@ -69,14 +62,14 @@
 		}
 	}
 
-	async function getBalance(address: string) {
-		const balance = await window.ethereum.request({
-			method: 'eth_getBalance',
-			params: [address, 'latest']
-		});
-		const formattedBalance = ethers.formatEther(balance);
-		data.set({ address, balance: formattedBalance });
-	}
+	// async function getBalance(address: string) {
+	// 	const balance = await window.ethereum.request({
+	// 		method: 'eth_getBalance',
+	// 		params: [address, 'latest']
+	// 	});
+	// 	const formattedBalance = ethers.formatEther(balance);
+	// 	data.set({ address, balance: formattedBalance });
+	// }
 
 	async function loginWithMetamask() {
 		if (window.ethereum) {
